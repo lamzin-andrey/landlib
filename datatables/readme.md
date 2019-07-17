@@ -98,16 +98,16 @@ class MyApp {
 	//Инициализация DataTables
 	construct() {
 		let id = '#mytable';
-        this.dataTable =  $(id).DataTable( {
-            'processing': true,
-            'serverSide': true,
-            'ajax': "/getdata.json",
-            "columns": [
+		this.dataTable =  $(id).DataTable( {
+			'processing': true,
+			'serverSide': true,
+			'ajax': "/getdata.json",
+			"columns": [
 				//..
 				//@see DataTables documentation
-                
-            ],
-            language: {
+				
+			],
+			language: {
                 url: '/datatablelangruRu.json'
             }
         } ).on('processing', () => {
