@@ -33,31 +33,31 @@ class MyApp {
 	//Init DataTables
 	construct() {
 		let id = '#mytable';
-        this.dataTable =  $(id).DataTable( {
-            'processing': true,
-            'serverSide': true,
-            'ajax': "/getdata.json",
-            "columns": [
+		this.dataTable =  $(id).DataTable( {
+			'processing': true,
+			'serverSide': true,
+			'ajax': "/getdata.json",
+			"columns": [
 				//..
 				//@see DataTables documentation
-                
-            ],
-            language: {
-                url: '/datatablelangruRu.json'
-            }
-        } ).on('processing', () => {
-            if (!this.dataTablesPreloader) {
+				
+			],
+			language: {
+				url: '/datatablelangruRu.json'
+			}
+		} ).on('processing', () => {
+			if (!this.dataTablesPreloader) {
 				//Align DataTables preloader center table and add spinner
 				this.dataTablesPreloader = new B4DataTablesPreloader();
 				//this params can put in constructor
 				//this.dataTablesPreloader = new B4DataTablesPreloader('#mytable', '#mytable_processing', this.dataTable);
-                this.dataTablesPreloader.setIdentifiers('#mytable', '#mytable_processing', this.dataTable);
-                //If you can not add spinner or align preloader center, use method configure 
-                this.dataTablesPreloader.configure(true, false);
-                //start observe
-                this.dataTablesPreloader.watch();
-            }
-        });
+				this.dataTablesPreloader.setIdentifiers('#mytable', '#mytable_processing', this.dataTable);
+				//If you can not add spinner or align preloader center, use method configure 
+				this.dataTablesPreloader.configure(true, false);
+				//start observe
+				this.dataTablesPreloader.watch();
+			}
+		});
 	}
 }
 ```
@@ -108,21 +108,21 @@ class MyApp {
 				
 			],
 			language: {
-                url: '/datatablelangruRu.json'
-            }
-        } ).on('processing', () => {
-            if (!this.dataTablesPreloader) {
+				url: '/datatablelangruRu.json'
+			}
+		} ).on('processing', () => {
+			if (!this.dataTablesPreloader) {
 				//Поместим прелоадер DataTables в центр таблицы и добавим ему спиннер
 				this.dataTablesPreloader = new B4DataTablesPreloader();
 				//Парамертры setIdentifiers можно было сразу передать в конструктор:
 				//this.dataTablesPreloader = new B4DataTablesPreloader('#mytable', '#mytable_processing', this.dataTable);
-                this.dataTablesPreloader.setIdentifiers('#mytable', '#mytable_processing', this.dataTable);
-                //Если вы не хотите добавлять спиннер или помещать прелоадер в центр таблицы, конфигурируйте его
-                this.dataTablesPreloader.configure(true, false);
-                //Начинаем мониторить прелоадер
-                this.dataTablesPreloader.watch();
-            }
-        });
+				this.dataTablesPreloader.setIdentifiers('#mytable', '#mytable_processing', this.dataTable);
+				//Если вы не хотите добавлять спиннер или помещать прелоадер в центр таблицы, конфигурируйте его
+				this.dataTablesPreloader.configure(true, false);
+				//Начинаем мониторить прелоадер
+				this.dataTablesPreloader.watch();
+			}
+		});
 	}
 }
 ```
