@@ -344,7 +344,6 @@
 					return false;
 				}
 			},
-			//TODO Для TreeAlg документацию написать и запушить её в landlib.
 			//TODO Описать добавленные события TreeView  и TreeNode на русском сначала.
 			//TODO onSuccessDeleteItem надо  this.stackremovedItems очищать
 			//TODO onSuccessDeleteItem надо  подумать, зачем я туда stackremovedItems.length придумал, ели оно не нужно, то ок.
