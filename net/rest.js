@@ -3,6 +3,10 @@ window.Rest = {
 	 * @property {String} csrf token, set it from app
 	*/
 	_token : '',
+	/**
+	 * @property {String} _lang
+	*/
+	_lang : '',
 	root : '',
 	/**
      * @description ajax post request (FormData)
@@ -77,19 +81,14 @@ window.Rest = {
         return this._token;
 	},
 	/**
-     * @description ajax request (FormData). Default delete Objects and Arrays from data argument
+     * @description ajax request (FormData).
 	 * @param {String} method 
      * @param {Function} onSuccess
      * @param {String} url 
      * @param {Function} onFail 
      */
     _restreq(method, data, onSuccess, url, onFail) {
-		let sendData = {...data}, i;
-		for (i in sendData) {
-			if (i == '__ob__' || (sendData[i] instanceof Object) ) {
-				delete  sendData[i];
-			}
-		}
+		let sendData = data;
         if (!url) {
             url = window.location.href;
         } else {
@@ -104,6 +103,9 @@ window.Rest = {
             case 'delete':
                 break;
 		}*/
+		if (this._lang && !sendData.lang) {
+			sendData.lang = this._lang;
+		}
         $.ajax({
             method: method,
             data:sendData,

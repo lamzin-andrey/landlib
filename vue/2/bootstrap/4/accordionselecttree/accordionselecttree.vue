@@ -4,47 +4,52 @@
 		<div class="accordion" :id="id + 'Accord'">
 			<div class="card">
 				<div class="card-header" :id="id + 'AccordHeading'">
-				<h5 class="mb-0">
-					<label>{{label}}: </label>
-					<button :class="btnCss"  type="button" data-toggle="collapse" data-target="#collapsePortCatTreeAccord" aria-expanded="true" aria-controls="collapseSeo">
-						<span v-if="selectedNode">{{ selectedNode[nodeLabelProp] }}</span> 
-					</button>
-				</h5>
-			</div>
-			<div id="collapsePortCatTreeAccord" class="collapse" :aria-labelledby="id + 'AccordHeading'" :data-parent="'#' + id + 'Accord'">
-				<div class="card-body">
-					<b-tree-view :ref="'v' + id" 
-						:data="treedata" 
-						:contextMenuItems="contextMenuItems" 
-						:showIcons="showIcons" 
-						showIcon="true"
-						:defaultIconClass="defaultIconClass"
-						:allowMultiple="allowMultiple"
-						:nodeKeyProp="nodeKeyProp"
-						:nodeChildrenProp="nodeChildrenProp"
-						:nodeLabelProp="nodeLabelProp"
-						:nodesDraggable="nodesDraggable"
-						:contextMenu="contextMenu"
-						:renameNodeOnDblClick="renameNodeOnDblClick"
-						:prependIconClass="prependIconClass"			
-						:iconClassProp="iconClassProp"
-						></b-tree-view>
+					<h5 class="mb-0">
+						<label>{{label}}: </label>
+						<button :class="btnCss"  type="button" data-toggle="collapse" data-target="#collapsePortCatTreeAccord" aria-expanded="true" aria-controls="collapseSeo">
+							<span v-if="selectedNode">{{ selectedNode[nodeLabelProp] }}</span> 
+						</button>
+					</h5>
 				</div>
+				<div id="collapsePortCatTreeAccord" :class="isAccordShow" :aria-labelledby="id + 'AccordHeading'" :data-parent="'#' + id + 'Accord'">
+					<div class="card-body">
+						<b-tree-view :ref="'v' + id" 
+							:data="treedata"
+							:contextMenuItems="contextMenuItems" 
+							:showIcons="showIcons"
+							:defaultIconClass="defaultIconClass"
+							:allowMultiple="allowMultiple"
+							:nodeKeyProp="nodeKeyProp"
+							:nodeChildrenProp="nodeChildrenProp"
+							:nodeLabelProp="nodeLabelProp"
+							:nodesDraggable="nodesDraggable"
+							:contextMenu="contextMenu"
+							:renameNodeOnDblClick="renameNodeOnDblClick"
+							:prependIconClass="prependIconClass"			
+							:iconClassProp="iconClassProp"
+							></b-tree-view>
+					</div>
+					 <transition  name="fade">
+						<div v-if="sErrorText" class="alert alert-danger">
+							{{sErrorText}}
+						</div>
+					</transition>
 				</div>
 			</div>
+			<!--label>Ac level
+				<input type="text" v-model="selectedNodeId" GUFinput="BUXemit('input', $event.target.value)">
+			</label-->
 		</div>
 
 	</div>
 </template>
 <script>
-	//Компонент для дерева категорий
-	//так импортировалось из bootstrap-vue-treeview
-    //import BootstrapVueTreeview from 'bootstrap-vue-treeview';
-	//Vue.use(BootstrapVueTreeview);
-
-	//Пытаюсь импортировать из своего форка
+	//Accordion + Tree view componend with send ajax data to server
 	import BootstrapVueTreeview from '../bootstrap-vue-treeview/index';
 	Vue.use(BootstrapVueTreeview);
+
+	import './css/animerror.css';
+	
 
     export default {
 		model: {
@@ -56,7 +61,7 @@
 				type: String
 			},
 			value: {
-				type: Number
+				
 			},
 			label: {
 				type: String
@@ -80,6 +85,10 @@
 			urlRemoveItem: {
 				type:String,
 				default: ''
+			},
+			accordisopen: {
+				type: Boolean,
+				default: false
 			},
 			//This props will be passed in TreeView
 			treedata: {
@@ -146,6 +155,28 @@
                 default: false
             }
 		},
+		watch:{
+			value:function(n, old) {
+				if (this.skipSelfWatch == true) {
+					this.skipSelfWatch = false;
+					return;
+				}
+				if (n != old) {
+					this.selectNodeById(n, false);
+				}
+			}
+		},
+		computed: {
+			isAccordShow:{
+				get() {
+					let s = 'collapse';
+					if (this.accordisopen) {
+						return (s + ' show');
+					}
+					return s;
+				}
+			},
+		},
 		name: 'categorytree',
 		
         //вызывается раньше чем mounted
@@ -164,42 +195,75 @@
 			btnCss : 'btn btn-danger',
 
 			/** @property {Array} contextMenuItems */
+			//TODO Писать документацию и публиковать, хватит с ним пока возиться.
+			//TODO очень потом сделать всё-таки передачу параметра (тут закомментировать, в props раскомментировать).
+			//TODO очень потом Обработчики этих ключей должны эмитировать события во вне, вдруг что-то ещё надо будет.
 			contextMenuItems :[
 				{code: 'ADD_NODE', label: this.$root.$t('app.Add_node')},
 				{code: 'RENAME_NODE', label: this.$root.$t('app.Rename_node')},
 				{code: 'DELETE_NODE', label: this.$root.$t('app.Delete_node')}
 			],
+
+			/** @property {Array} sErrorText сообщение об ошибке */
+			sErrorText : '',
 			
 		}; },
-		computed: {
-			/*dinlabel : function() {
-				if (this.placeholderlabel) {
-					return this.placeholderlabel;
-				}
-				return this.label;
-			}*/
-		},
         //
         methods:{
+			selectNodeById(key, recreatNodeMap = true) {
+				if (recreatNodeMap) {
+					delete this.$refs['v' + this.id].nodeMap;
+					this.$refs['v' + this.id].createNodeMap();
+				}
+				let x = this.$refs['v' + this.id].getNodeByKey(parseInt(key));
+				if (x) {
+					x.select();
+					this.expandBranch(x);
+					return true;
+				}
+				this.selectedNode = this.defaultSelectedNode;
+				this.btnCss = 'btn btn-danger';
+				return false;
+			},
+			/**
+			 * @param {TreeNode} oNode
+			*/
+			expandBranch(oNode) {
+				oNode.expand();
+				let x = this.$refs['v' + this.id].getNodeByKey(parseInt(oNode.data[this.nodeParentKeyProp]));
+				while (x) {
+					x.expand();
+					x = this.$refs['v' + this.id].getNodeByKey(parseInt(x.data[this.nodeParentKeyProp]));
+				}
+			},
 			/**
 			 * @description Обработка выбора пункта контекстного меню дерева категорий
 			*/
 			onSelectTreeViewContextMenuItem(item, node){
 				if (item.code == 'ADD_NODE') {
-					//TODO add spinner
-					/* <div role="status" class="spinner-grow small">
-									  <span class="sr-only">Loading...</span>
-					</div>*/
-					//data, onSuccess, url, onFail
-
 					if (this.nRequestAddNodeId) {
-						this.showError(this.$t('app.Add_request_already_sended_wait'));//TODO loc and showError
+						this.showError(this.$t('app.Add_request_already_sended_wait'));
 						return;
 					}
+					this.showSpinner(node.$el);
 					let id = node.data[this.nodeKeyProp];
 					this.nRequestAddNodeId = id;
 					Rest._post({parent_id : id}, (data) => {this.onSuccessAddNewItem(data); }, this.urlCreateNewItem, (a, b, c) => {this.onFailItemAction(a, b, c);});
 				}
+			},
+			/**
+			 * @description Show spinner for add node
+			*/
+			showSpinner(el) {
+				$(el).find('.tree-node').first().append($(`<div role="status" class="spinner-grow small j-node-spinner">
+					  <span class="sr-only">Loading...</span>
+				</div>`));
+			},
+			/**
+			 * @description Delete spinner for add node
+			*/
+			deleteSpinner(){
+				$('.j-node-spinner').remove();
 			},
 			/**
 			 * @description Processed success add new item
@@ -207,14 +271,12 @@
 			*/
 			onSuccessAddNewItem(data) {
 				if (!this.onFailItemAction(data)) {
-					//TODO drop spinner
 					return;
 				}
-				
 				delete this.$refs['v' + this.id].nodeMap;
 				this.$refs['v' + this.id].createNodeMap();
 				
-				let x = this.$refs['v' + this.id].getNodeByKey(data[this.nodeParentKeyProp]);
+				let x = this.$refs['v' + this.id].getNodeByKey(parseInt(data[this.nodeParentKeyProp]));
 				let newNodeData = {};
 				newNodeData[this.nodeKeyProp] = data[this.nodeKeyProp];
 				newNodeData[this.nodeLabelProp] = data[this.nodeLabelProp];
@@ -229,6 +291,7 @@
 			 * @param {Object} data
 			*/
 			onFailItemAction(data, b, c) {
+				this.deleteSpinner();
 				this.nRequestAddNodeId = 0;
 				if (data.status && data.status == 'ok') {
 					return true;
@@ -245,9 +308,10 @@
 				
 			},
 			/**
-			 * @description 
+			 * @description Send request to server with new item name
 			*/
 			onRenameTreeViewItem(node) {
+				this.showSpinner(node.$el);
 				let sendData = {};
 				sendData[this.nodeKeyProp] = node.data[this.nodeKeyProp];
 				sendData[this.nodeParentKeyProp] = node.data[this.nodeParentKeyProp];
@@ -259,69 +323,56 @@
 			*/
 			onSuccessRenameItem(data) {
 				if (!this.onFailItemAction(data)) {
-					//TODO drop spinner
 					return;
 				}
 			},
 			/**
-			 * TODO Пусть в конейнере со списком снизу розовый алерт выдвигается
+			 * @description show error create / update items
 			 */
 			showError(s) {
-				alert(s);
+				setTimeout(() => {
+					this.sErrorText = s;
+					setTimeout(() => {
+						this.sErrorText = '';
+					}, 2*1000);
+				}, 500);
 			},
 			/**
 			 * @description Processing select tree node
 			*/
-			onSelectTreeViewItem(node, isSelected){
+			onSelectTreeViewItem(node, isSelected) {
 				if (isSelected) {
 					this.selectedNode = node.data;
 					this.btnCss = 'btn btn-success';
+					this.selectedNodeId = this.selectedNode[this.nodeKeyProp];
+					this.$emit('input', this.selectedNodeId);
+					this.skipSelfWatch = true;
 				} else if (node.data[this.nodeKeyProp] === this.selectedNode[this.nodeKeyProp]) {
 					this.selectedNode = this.defaultSelectedNode;
 					this.btnCss = 'btn btn-danger';
+					this.selectedNodeId = this.selectedNode[this.nodeKeyProp];
+					this.$emit('input', this.selectedNodeId);
+					this.skipSelfWatch = true;
 				}
-				this.selectedNodeId = this.selectedNode[this.nodeKeyProp];
-				this.$emit('input', this.selectedNodeId);
 			},
 			/**
-			 * TODO try _delete later
 			 * @description Processing delete node (nodes)
 			 * @param {TreeNode} node
 			 * @param {Array} nodesData (array of objects {this.nodeKeyProp, this.nodeParentKeyProp, this.nodeLabelProp})
 			 * @param {Array} idList (array of numbers)
 			*/
 			onDeleteTreeViewItem(node, nodesData, idList) {
-				//TODO add spinner
-				/* <div role="status" class="spinner-grow small">
-									<span class="sr-only">Loading...</span>
-				</div>*/
-				//data, onSuccess, url, onFail
-
 				if (!this.stackremovedItems) {
-					//TODO сюда помещаем всех потомков ветки и ветку по id
-					//скорее всего понадобится в TreeView.menuItemSelected перед удалением собрать все id
-					this.stackremovedItems = {length:0};
+					//сюда помещаем всех потомков ветки и ветку по id
+					this.stackremovedItems = {};
 				}
-
+				this.exampleNode = {...node};
 				let id = node.data[this.nodeKeyProp], i, currObj;
-				/*this.nRequestDeleteNodeId = id;
-				this.sRequestedNodeLabel = node.data[this.nodeLabelProp];
-				this.nRequestedNodeParentId = node.data[this.nodeParentKeyProp];*/
 				for (i = 0; i < nodesData.length; i++) {
-					//currObj = {...nodesData[i]}; TODO try it
-					currObj = {};//TODO  currObj = {...nodesData[i]}; вместо этой и трёх следующих
-					currObj[this.nodeKeyProp] = nodesData[i][this.nodeKeyProp];
-					currObj[this.nodeLabelProp] = nodesData[i][this.nodeLabelProp];
-					currObj[this.nodeParentKeyProp] = nodesData[i][this.nodeParentKeyProp];
+					currObj = {...nodesData[i]};
 					this.stackremovedItems[ currObj[this.nodeKeyProp] ] = currObj;
-					this.stackremovedItems.length++;
-
-					//remove from treedata
-					TreeAlgorithms.idFieldName = this.nodeKeyProp;
-					TreeAlgorithms.parentIdFieldName = this.nodeParentKeyProp;
-					TreeAlgorithms.childsFieldName = this.nodeChildrenProp;
 				}
-				Rest._post({idList}, (data) => {this.onSuccessDeleteItem(data); }, this.urlRemoveItem, (a, b, c) => {this.onFailDeleteItem(a, b, c);});
+				Rest._post({idList:idList}, (data) => {this.onSuccessDeleteItem(data); }, this.urlRemoveItem, (a, b, c) => {this.onFailDeleteItem(a, b, c);});
 			},
 			/**
 			 * @description Restore tree nodes if nodes no removed
@@ -344,60 +395,70 @@
 					return false;
 				}
 			},
-			//TODO Описать добавленные события TreeView  и TreeNode на русском сначала.
-			//TODO onSuccessDeleteItem надо  this.stackremovedItems очищать
-			//TODO onSuccessDeleteItem надо  подумать, зачем я туда stackremovedItems.length придумал, ели оно не нужно, то ок.
 			/**
-			 * TODO подумай, что делать с удалением всего дерева (parent_id undefined)
+			 * @description Clear this.stackremovedItems
+			 * @param {Object} data
+			*/
+			onSuccessDeleteItem(data) {
+				if (!this.onFailDeleteItem(data)) {
+					return;
+				}
+				if (data.ids) {
+					let i, cid;
+					for (i = 0; i < data.ids.length; i++) {
+						cid = data.ids[i];
+						delete this.stackremovedItems[cid];
+						if (cid == this.selectedNode[this.nodeKeyProp]) {
+							this.selectedNode = this.defaultSelectedNode;
+							this.btnCss = 'btn btn-danger';
+						}
+					}
+				}
+			},
+			/**
 			 * @description Restore tree nodes if nodes no removed
 			*/
 			restoreAllRemovedItems() {
 				let arr = [], i, aTree;
 				for (i in this.stackremovedItems) {
-					if (i !== 'length') {
-						arr.push( this.stackremovedItems[i] );
-					}
+					arr.push( this.stackremovedItems[i] );					
 				}
 				TreeAlgorithms.idFieldName = this.nodeKeyProp;
 				TreeAlgorithms.parentIdFieldName = this.nodeParentKeyProp;
 				TreeAlgorithms.childsFieldName = this.nodeChildrenProp;
-				console.log('arr', arr);
 				aTree = TreeAlgorithms.buildTreeFromFlatList(arr, true);
-				console.log('aTree', aTree);
 				
-				for (i = 0; i < aTree.length; i++) {
-					TreeAlgorithms.walkAndExecuteAction(aTree[i], {context:this, f:this.addNode});
+				//Restore all tree
+				if (!aTree[0][this.nodeParentKeyProp]) {
+					this.addNode(aTree[0]);
+				} else {
+					for (i = 0; i < aTree.length; i++) {
+						TreeAlgorithms.walkAndExecuteAction(aTree[i], {context:this, f:this.addNode});
+					}
 				}
 			},
 			/**
-			 * TODO rename this file
-			 * @description Add node in Tree if it no exists
+			 * @description Add node in Tree if it no exists (@see restoreAllRemovedItems)
 			 * @param {Object} nodeData
 			*/
 			addNode(nodeData) {
-				let i;
-				//есть ли такой узел в дереве?
+				//search node in tree
 				delete this.$refs['v' + this.id].nodeMap;
 				this.$refs['v' + this.id].createNodeMap();
-				let parentNode, x = this.$refs['v' + this.id].getNodeByKey(nodeData[this.nodeKeyProp]);
+				let parentNode, x = this.$refs['v' + this.id].getNodeByKey(parseInt(nodeData[this.nodeKeyProp]));
 				if (x) {
 					return;
 				}
+				//root
+				if (!nodeData[this.nodeParentKeyProp] || nodeData[this.nodeParentKeyProp] == 0) {
+					this.exampleNode.data = nodeData;
+					this.$refs['v' + this.id].data.push(nodeData);
+					return;
+				}
+				//no root
 				parentNode = this.$refs['v' + this.id].getNodeByKey(nodeData[this.nodeParentKeyProp]);
 				if (parentNode) {
 					parentNode.appendChild(nodeData);
-					let dTreeData = [...this.treedata];
-				}
-			},
-			/**
-			 * @param {TreeNode} oNode
-			*/
-			expandBranch(oNode) {
-				oNode.expand();
-				let x = this.$refs['v' + this.id].getNodeByKey(oNode.data[this.nodeParentKeyProp]);
-				while (x) {
-					x.expand();
-					x = this.$refs['v' + this.id].getNodeByKey(x.data[this.nodeParentKeyProp]);
 				}
 			},
 			/**
@@ -418,19 +479,20 @@
 						{code: 'RENAME_NODE', label: this.$root.$t('app.Rename_node')},
 						{code: 'DELETE_NODE', label: this.$root.$t('app.Delete_node')}
 					];
-			}
-        }, //end methods
+			},
+			/**
+			 * @description dinamic change selection
+			*/
+			selectAndExpandNode(recreatNodeMap = true) {
+				this.selectNodeById(this.value, recreatNodeMap);
+			}        }, //end methods
         
         mounted() {
 			this.localizeDefaultMenu();
 			this.initDefaultSelectedNode();
-			this.selectedNode = this.defaultSelectedNode;
-			this.$refs['v' + this.id].createNodeMap();
-			let x = this.$refs['v' + this.id].getNodeByKey(this.value);
-			if (x) {
-				x.select();
-				this.expandBranch(x);
-			}
+			
+
+			this.selectAndExpandNode();
 			this.$refs['v' + this.id].$on('contextMenuItemSelect', (item, node) => {
                 this.onSelectTreeViewContextMenuItem(item, node);
 			});
