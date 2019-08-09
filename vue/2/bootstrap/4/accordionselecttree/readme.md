@@ -4,6 +4,9 @@
 
 This vue 2 component combining an accordion and a tree structure for selection.
 
+It is based on the component https://github.com/lamzin-andrey/landlib/tree/master/vue/2/bootstrap/4/bootstrap-vue-treeview, which in turn is fork of https://github.com/kamil-lip/bootstrap-vue-treeview
+
+
 Adding, editing and deleting tree elements can be sent to the server immediately if you fill in the attributes `urlCreateNewItem`,` urlUpdateItem`, `urlRemoveItem`.
 
 The model associated with the component contains the id of the selected element.
@@ -110,25 +113,24 @@ The backend should provide you with the following data:
 
 ```
 
-#### Vue код
+#### Vue code
 
-Код vue компонента для вставки в HTML шаблон
 Vue component code for use it in the HTML template (or another vue-component)
 
 ```html
 <accordionselecttree
-								id="categoriesTree"
-								v-model="selectedCategory"
-								default-icon-class="fas fa-box"
-								:show-icons="true"
-								:label="$t('app.Category')"
-								:treedata="categoriesTree"
-								url-create-new-item="https://andryuxa.ru/p/treedemo/dcatsave.jn/"
-								url-update-item="https://andryuxa.ru/p/treedemo/dcatsave.jn/"
-								url-remove-item="https://andryuxa.ru/p/treedemo/dcatdelte.jn/"
-								ref="treeview"
-							></accordionselecttree>
-							<textarea hidden style="display:none" id="categorydata">[
+	id="categoriesTree"
+	v-model="selectedCategory"
+	default-icon-class="fas fa-box"
+	:show-icons="true"
+	:label="$t('app.Category')"
+	:treedata="categoriesTree"
+	url-create-new-item="https://andryuxa.ru/p/treedemo/dcatsave.jn/"
+	url-update-item="https://andryuxa.ru/p/treedemo/dcatsave.jn/"
+	url-remove-item="https://andryuxa.ru/p/treedemo/dcatdelte.jn/"
+	ref="treeview"
+></accordionselecttree>
+<textarea hidden style="display:none" id="categorydata">[
 	{
 		"id" : 1,
 		"parent_id" : 0,
@@ -180,7 +182,6 @@ const i18n = new VueI18n({
 //end Localization
 
 
-//Проследите, чтобы пути к файлам библиотек были указаны верно
 //Make sure, that path to libraries will be right
 
 //REST library
@@ -224,11 +225,13 @@ window.app = new Vue({
 		let data = $('#categorydata').val();
 		try {
 			data = JSON.parse(data);
-			//Если сервер вернул "плоский" список, мы можем построить из него дерево сами
 			//If server response containts "flat" list, we can build tree ourselves!
 			//		(Object TreeAlgorithms already imported in the our component)
 			data = TreeAlgorithms.buildTreeFromFlatList(data, true);
-			this.categoriesTree[0] = data[0];
+			
+			this.categoriesTree = data;
+			//or this.categoriesTree[0] = data[0]; if vue warning
+
 			setTimeout(() =>{
 				this.selectedCategory = 3;	//For example we on the web-page some product,and server returned for us category tree and category this product
 				//Select it in tree
@@ -290,11 +293,13 @@ If it turned out that in the data returned by the server, the field storing the 
 ##### node-key-prop (nodeKeyProp)
 			
 Similar to nodeParentKeyProp, but for a field that stores the identifier of an element.
+
 	A similar property of the TreeAlgorithms object is called `idFieldName`.
 			
 ##### node-сhildren-prop (nodeChildrenProp)
 
 Similar to nodeParentKeyProp, but for a field that stores the descendants of an element. In our example from this documentation, we assume that the server returned a flat list and build a tree from it.
+
 	A similar property of the TreeAlgorithms object is called `childsFieldName`.
 
 ```javascript
@@ -343,12 +348,14 @@ Above is a piece of code that builds a tree from a flat list. The result of his 
 ```
 
 This data could immediately come from the server. But the `children` field in this case could be called differently, for example` child_items`. In this case, we can pass `nodeChildrenProp ="child_items"` to ensure the component works.
-    A similar property of the TreeAlgorithms object is called `childsFieldName`.
+
+	A similar property of the TreeAlgorithms object is called `childsFieldName`.
 
 ##### node-label-prop (nodeLabelProp)
 
 Similar to nodeParentKeyProp, but for a field that stores the name of the element.
-    The TreeAlgorithms object does not have a similar property, since it does not need it.
+
+	The TreeAlgorithms object does not have a similar property, since it does not need it.
 	
 ##### nodes-draggable (nodesDraggable)
 
@@ -386,7 +393,7 @@ Request:
 | --- | --- | --- |
 | parent_id | 3 | Yes |
 | _token | 1cdslkjhs4dfjkhs8fdjkhsg | Yes |
-| lang | en | Нет |
+| lang | en | No |
 
 Response:
 
@@ -432,7 +439,7 @@ Request:
 | idList[] | 2413 | Yes |
 | idList[] | 2526 | Yes |
 | _token | 1cdslkjhs4dfjkhs8fdjkhsg | Yes |
-| lang | en | Нет |
+| lang | en | No |
 
 Response:
 
@@ -457,6 +464,8 @@ This is a special object that contains convenient methods for working with tree-
 ## Что это
 
 Компонент vue 2 сочетающий аккордион и древовидную структуру для выбора элемента древовидной структуры.
+
+Базируется на компоненте https://github.com/lamzin-andrey/landlib/tree/master/vue/2/bootstrap/4/bootstrap-vue-treeview, который в свою очередь форк проекта https://github.com/kamil-lip/bootstrap-vue-treeview
 
 Добавление, редактирование и удаление элементов дерева немедленно отправляется на url сервера, которые вы можете указать в атрибутах  `urlCreateNewItem`, `urlUpdateItem`, `urlRemoveItem`.
 
@@ -569,18 +578,18 @@ landlib https://github.com/lamzin-andrey/landlib.git
 
 ```html
 <accordionselecttree
-								id="categoriesTree"
-								v-model="selectedCategory"
-								default-icon-class="fas fa-box"
-								:show-icons="true"
-								:label="$t('app.Category')"
-								:treedata="categoriesTree"
-								url-create-new-item="https://andryuxa.ru/p/treedemo/dcatsave.jn/"
-								url-update-item="https://andryuxa.ru/p/treedemo/dcatsave.jn/"
-								url-remove-item="https://andryuxa.ru/p/treedemo/dcatdelte.jn/"
-								ref="treeview"
-							></accordionselecttree>
-							<textarea hidden style="display:none" id="categorydata">[
+	id="categoriesTree"
+	v-model="selectedCategory"
+	default-icon-class="fas fa-box"
+	:show-icons="true"
+	:label="$t('app.Category')"
+	:treedata="categoriesTree"
+	url-create-new-item="https://andryuxa.ru/p/treedemo/dcatsave.jn/"
+	url-update-item="https://andryuxa.ru/p/treedemo/dcatsave.jn/"
+	url-remove-item="https://andryuxa.ru/p/treedemo/dcatdelte.jn/"
+	ref="treeview"
+></accordionselecttree>
+<textarea hidden style="display:none" id="categorydata">[
 	{
 		"id" : 1,
 		"parent_id" : 0,
@@ -637,7 +646,7 @@ const i18n = new VueI18n({
 //REST library
 require('../../../j/sources/landlib/net/rest.js');
 
-//Yfi rjvgjytyn
+//Наш компонент
 Vue.component('accordionselecttree', require('../../../j/sources/landlib/vue/2/bootstrap/4/accordionselecttree/accordionselecttree.vue'));
 
 window.app = new Vue({
@@ -680,7 +689,8 @@ window.app = new Vue({
 			data = JSON.parse(data);
 			//Если сервер вернул "плоский" список, мы можем построить из него дерево сами
 			data = TreeAlgorithms.buildTreeFromFlatList(data, true);
-			this.categoriesTree[0] = data[0];
+			this.categoriesTree = data;
+			//or this.categoriesTree[0] = data[0]; если vue warning
 			setTimeout(() =>{
 				this.selectedCategory = 3;	//Напрмер мы на странице товара, а сервер вернул нам помимо данных дерева категорий категорию товара
 				this.$refs.treeview.selectNodeById(this.selectedCategory);
@@ -696,7 +706,7 @@ window.app = new Vue({
 
 ##### id
 
-Каждый компонентом accordionselecttree создает скрытый инпут с id и name равным переданному id. Это удобно, если компонент содержится внутри формы, которая будет отправляться без участия javascript.
+Каждый компонент accordionselecttree создает скрытый инпут с id и name равным переданному id. Это удобно, если компонент содержится внутри формы, которая будет отправляться без участия javascript.
 
 ##### v-model
 
@@ -740,23 +750,26 @@ window.app = new Vue({
 ##### node-parent-key-prop (nodeParentKeyProp)
 
 Если оказалось, что в данных, которые вернул сервер поле хранящее идентификатор родительского элмента называется не `parent_id`, а иначе, например `parent_node_id`, вы можете указать его имя в этом атрибуте.
-    Аналогичное свойство объекта TreeAlgorithms называется `parentIdFieldName`.
+	
+	Аналогичное свойство объекта TreeAlgorithms называется `parentIdFieldName`.
 
 ##### node-key-prop (nodeKeyProp)
 			
 Аналогично nodeParentKeyProp, но для поля, хранящего идентификатор элемента.
+	
 	Аналогичное свойство объекта TreeAlgorithms называется `idFieldName`.
 			
 ##### node-сhildren-prop (nodeChildrenProp)
 
 Аналогично nodeParentKeyProp, но для поля, хранящего потомков элемента. В нашем примере из этой документации мы исходим из того, что сервер вернул плоский список и строим из него дерево.
+
 	Аналогичное свойство объекта TreeAlgorithms называется `childsFieldName`.
 
 ```javascript
 data = TreeAlgorithms.buildTreeFromFlatList(data, true);
 ```
 
-Выше фрагмент кода, который строит дерефо из плоского списка. Результатом его работы будет (для нашего примера)
+Выше фрагмент кода, который строит дерево из плоского списка. Результатом его работы будет (для нашего примера)
 
 ```json
 [
@@ -803,6 +816,7 @@ data = TreeAlgorithms.buildTreeFromFlatList(data, true);
 ##### node-label-prop (nodeLabelProp)
 
 Аналогично nodeParentKeyProp, но для поля, хранящего имя элемента.
+	
 	Объект TreeAlgorithms не имеет аналогичного свойства, так как оно ему не нужно.
 	
 ##### nodes-draggable (nodesDraggable)
@@ -899,7 +913,7 @@ Response:
 }
 ```
 
-**Передавать в ответе сервера список идентификаторов необходимо для корректной раьботы компонента**
+**Передавать в ответе сервера список идентификаторов необходимо для корректной работы компонента**
 
 
 ## Объект TreeAlgorithms
