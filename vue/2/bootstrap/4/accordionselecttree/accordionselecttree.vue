@@ -157,6 +157,7 @@
 		},
 		watch:{
 			value:function(n, old) {
+				n = Number(n);
 				if (this.skipSelfWatch == true) {
 					this.skipSelfWatch = false;
 					return;
@@ -220,6 +221,12 @@
 					x.select();
 					this.expandBranch(x);
 					return true;
+				}
+				if (this.selectedNode) {
+					x = this.$refs['v' + this.id].getNodeByKey(parseInt(this.selectedNode[this.nodeKeyProp]));
+					if (x && x.deselect) {
+						x.deselect();
+					}
 				}
 				this.selectedNode = this.defaultSelectedNode;
 				this.btnCss = 'btn btn-danger';
@@ -485,8 +492,8 @@
 			*/
 			selectAndExpandNode(recreatNodeMap = true) {
 				this.selectNodeById(this.value, recreatNodeMap);
-			}        }, //end methods
-        
+			}
+		}, //end methods
         mounted() {
 			this.localizeDefaultMenu();
 			this.initDefaultSelectedNode();

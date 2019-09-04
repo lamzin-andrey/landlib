@@ -79,13 +79,15 @@ window.TextFormat = {
 	*/
 	transliteUrl:function (s)  {
 		function str_replace(search, replace, subject, oCount) {
+			subject = subject ? String(subject) : '';
 			oCount = oCount ? oCount : {};
 			oCount.n = 0;
 			while (~subject.indexOf(search)) {
 				subject = subject.replace(search, replace);
+				subject = subject ? subject : '';
 				oCount.n++;
 			}
-			return subject;
+			return subject.toLowerCase();
 		}
 
 		var a = str_replace;
