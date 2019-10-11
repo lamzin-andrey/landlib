@@ -2,7 +2,7 @@
 
 ## About
 
-When you upload a YouTube video to your site, it slows down the page loading speed for Google.
+When you append a YouTube video to your site, it slows down the page loading speed for Google.
 You can add youtube iframe om your web page and run https://developers.google.com/speed/pagespeed/insights/?hl=ru&url=https%3A%2F%2Fandryuxa.ru%2Fblog%2F tool. If you see red indicator after append youtube video, you can use this component. This will add youtube iframe html code after click on "patch" image.
 
 ## Install
@@ -62,7 +62,7 @@ This value for frameborder attribute youtube iframe. Default "0".
 
 ## Что это
 
-Когда вы загружаете видео YouTube на свой сайт, это замедляет скорость загрузки страниц для Google.
+Когда вы добавляете видео YouTube на свой сайт, это замедляет скорость загрузки страниц для Google.
 Вы можете добавить  YouTube iframe на свою веб-страницу и запустить инструмент https://developers.google.com/speed/pagespeed/insights/?hl=ru&url=https%3A%2F%2Fandryuxa.ru%2Fblog%2F для своего сайта. Если вы видите красный индикатор после добавления видео на YouTube, вы можете использовать этот компонент. Его использование позволяет добавлять HTML-код iframe для YouTube после нажатия на «патч» изображение.
 
 ## Установка
