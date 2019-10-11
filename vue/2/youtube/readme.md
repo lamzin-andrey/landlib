@@ -81,7 +81,6 @@ Vue.component('youtube', require('../landlib/vue/2/youtube/youtube.vue'));
 <youtube video="https://www.youtube.com/watch?v=mFlrc16xjik" img="/i/relaxdemo.jpg" autoplay="false"></youtube>
 ```
 
-In the img attribute you must specify the path to the image that will be displayed instead of the video.
 В атрибуте img вы должны указатьпуть к изображению, которое будет показываться вместо видео на сайте, пока пользователь по нему не кликнет.
 
 ### Атрибуты
