@@ -14,9 +14,9 @@ window.Probability = {
 		nTotal = +nTotal;
 		var nRight = nTotal - nPlacementSize + 1,
 			i, r = 1;
-				if (!nPlacementSize || !nTotal || nPlacementSize > nTotal) {
-					return parseInt('nan');
-				}
+		if (!nPlacementSize || !nTotal || nPlacementSize > nTotal) {
+			return parseInt('nan');
+		}
 		for (i = nRight; i <= nTotal; i++) {
 			r *= i;
 		}
@@ -29,6 +29,24 @@ window.Probability = {
 	*/
 	replacementsCount:function(nTotal){
 		return this.factorial(nTotal);
+	},
+	/**
+	 * @description Вернёт число сочетаний nTotal предметов по nSize Will return the number of combinations of nTotal items by nSize
+	 * Сочетаниями называют комбинации, составленные из n различных элементов по m элементов, которые отличаются хотя бы одним элементом.
+	 * @param {Number} nSize
+	 * @param {Number} nTotal
+	 * @return Number or NaN if arguments invalid (isNaN or nSize > nTotal)
+	*/
+	combinationsCount:function(nSize, nTotal){
+		nSize = +nSize;
+		nTotal = +nTotal;
+		var nDiff = nTotal - nSize,
+			i, r = 1;
+		if (!nSize || !nTotal || nSize > nTotal) {
+			return parseInt('nan');
+		}
+		r = this.factorial(nTotal) / ( this.factorial(nSize) * this.factorial(nTotal - nSize) );
+		return r;
 	},
 	factorial:function(n){
 		n = parseInt(n);
