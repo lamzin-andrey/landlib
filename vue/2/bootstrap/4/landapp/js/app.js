@@ -6,8 +6,8 @@ require('../../landlib/net/rest.js');
 
 
 //For live translit
-require('../../landlib/nodom/textformat.js');
-require('../../landlib/dom/livetranslit/livetranslit.js');
+require('../../landlib/nodom/textformat.js').default;
+require('../../landlib/dom/livetranslit/livetranslit.js').default;
 
 
 
