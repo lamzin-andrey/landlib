@@ -79,7 +79,7 @@ window.TextFormat = {
 	*/
 	capitalize:function(s){
 		let first = s.charAt(0), tail = s.substring(1);
-		return (first + tail);
+		return (first.toUpperCase() + tail);
 	},
 	/**
 	 * @description 
