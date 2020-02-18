@@ -130,6 +130,7 @@ export default {
             if (!data.tags) {
                 return false;
             }
+            return true;
         },
         /**
          * @description Установка списка населенных пунктов в автокомплит vue-tags-input. Регионы городов добавляются в конец списка
