@@ -62,10 +62,10 @@ export default {
     computed:{
         /** @description Для компонента тагов, передрано из документации http://www.vue-tags-input.com/#/examples/autocomplete */
             filteredItems() {
-            return this.autocompleteItems.filter(i => {
-                return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
-            });
-        }
+                return this.autocompleteItems.filter(i => {
+                    return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
+                });
+            }
     },
 
     methods: {
@@ -81,7 +81,15 @@ export default {
          * @param {Array} tags [{id: Number, name:String}, ...]
         */
         setTags(tags) {
-            this.tags = tags;
+            this.tags = [];
+            let i, o;
+            for (i in tags) {
+                o = {};
+                o.id = tags[i].id;
+                o.text = tags[i].name;
+                this.tags.push(o);
+            }
+           // this.onSuccessLoadTags({tags: tags});
         },
         /**
          * @description Обработка удаления тэга
