@@ -9,115 +9,115 @@ window.Rest = {
 	_lang : '',
 	root : '',
 	/**
-     * @description ajax post request (FormData)
-     * @param {Object} data 
-     * @param {Function} onSuccess
-     * @param {String} url 
-     * @param {Function} onFail 
-     * @param {Boolean} noSetToken = false
-     */
-    _post(data, onSuccess, url, onFail, noSetToken = false) {
-        let t = this._getToken();
-        if (t) {
+	 * @description ajax post request (FormData)
+	 * @param {Object} data 
+	 * @param {Function} onSuccess
+	 * @param {String} url 
+	 * @param {Function} onFail 
+	 * @param {Boolean} noSetToken = false
+	 */
+	_post(data, onSuccess, url, onFail, noSetToken = false) {
+		let t = this._getToken();
+		if (t) {
 			if (!noSetToken) {
 				data._token = t;
 			}
-            this._restreq('post', data, onSuccess, url, onFail)
-        }
+			this._restreq('post', data, onSuccess, url, onFail)
+		}
 	},
 	/**
-     * @description ajax post request (FormData)
-     * @param {Object} data 
-     * @param {Function} onSuccess
-     * @param {String} url 
-     * @param {Function} onFail 
-     */
-    _put(data, onSuccess, url, onFail) {
-        let t = this._getToken();
-        if (t) {
-            data._token = t;
-            this._restreq('put', data, onSuccess, url, onFail)
-        }
+	 * @description ajax post request (FormData)
+	 * @param {Object} data 
+	 * @param {Function} onSuccess
+	 * @param {String} url 
+	 * @param {Function} onFail 
+	 */
+	_put(data, onSuccess, url, onFail) {
+		let t = this._getToken();
+		if (t) {
+			data._token = t;
+			this._restreq('put', data, onSuccess, url, onFail)
+		}
 	},
 	/**
-     * @description ajax patch request (FormData)
-     * @param {Object} data 
-     * @param {Function} onSuccess
-     * @param {String} url 
-     * @param {Function} onFail 
-     */
-    _patch(data, onSuccess, url, onFail) {
-        let t = this._getToken();
-        if (t) {
-            data._token = t;
-            this._restreq('patch', data, onSuccess, url, onFail)
-        }
+	 * @description ajax patch request (FormData)
+	 * @param {Object} data 
+	 * @param {Function} onSuccess
+	 * @param {String} url 
+	 * @param {Function} onFail 
+	 */
+	_patch(data, onSuccess, url, onFail) {
+		let t = this._getToken();
+		if (t) {
+			data._token = t;
+			this._restreq('patch', data, onSuccess, url, onFail)
+		}
 	},
 	/**
-     * @description ajax delte request (FormData)
-     * @param {Object} data 
-     * @param {Function} onSuccess
-     * @param {String} url 
-     * @param {Function} onFail 
-     */
-    _delete(data, onSuccess, url, onFail) {
-        let t = this._getToken();
-        if (t) {
-            data._token = t;
-            this._restreq('delete', data, onSuccess, url, onFail)
-        }
+	 * @description ajax delte request (FormData)
+	 * @param {Object} data 
+	 * @param {Function} onSuccess
+	 * @param {String} url 
+	 * @param {Function} onFail 
+	 */
+	_delete(data, onSuccess, url, onFail) {
+		let t = this._getToken();
+		if (t) {
+			data._token = t;
+			this._restreq('delete', data, onSuccess, url, onFail)
+		}
 	},
 	/**
-     * @description ajax get request (FormData)
-     * @param {Function} onSuccess
-     * @param {String} url 
-     * @param {Function} onFail 
-     */
-    _get(onSuccess, url, onFail) {
-        this._restreq('get', {}, onSuccess, url, onFail)
+	 * @description ajax get request (FormData)
+	 * @param {Function} onSuccess
+	 * @param {String} url 
+	 * @param {Function} onFail 
+	 */
+	_get(onSuccess, url, onFail) {
+		this._restreq('get', {}, onSuccess, url, onFail)
 	},
 	/**
-     * @description get asrf token
+	 * @description get asrf token
 	 * @return String
-     */
-    _getToken() {
-        return this._token;
+	 */
+	_getToken() {
+		return this._token;
 	},
 	/**
-     * @description ajax request (FormData).
+	 * @description ajax request (FormData).
 	 * @param {String} method 
-     * @param {Function} onSuccess
-     * @param {String} url 
-     * @param {Function} onFail 
-     */
-    _restreq(method, data, onSuccess, url, onFail) {
+	 * @param {Function} onSuccess
+	 * @param {String} url 
+	 * @param {Function} onFail 
+	 */
+	_restreq(method, data, onSuccess, url, onFail) {
 		let sendData = data;
-        if (!url) {
-            url = window.location.href;
-        } else {
-            url = this.root + url;
-        }
-        if (!onFail) {
-            onFail = defaultFail;
-        }
-        /*switch (method) {
-            case 'put':
-            case 'patch':
-            case 'delete':
-                break;
+		if (!url) {
+			url = window.location.href;
+		} else {
+			url = this.root + url;
+		}
+		if (!onFail) {
+			onFail = defaultFail;
+		}
+		/*switch (method) {
+			case 'put':
+			case 'patch':
+			case 'delete':
+				break;
 		}*/
 		if (this._lang && !sendData.lang) {
 			sendData.lang = this._lang;
-        }
-        let conf = {
-            method: method,
-            data:sendData,
-            url:url,
-            dataType:'json',
-            success:onSuccess,
-            error:onFail
-        };
-        $.ajax(conf);
-        
+		}
+		let conf = {
+			method: method,
+			data:sendData,
+			url:url,
+			dataType:'json',
+			success:onSuccess,
+			error:onFail
+		};
+		$.ajax(conf);
+		
 	},
 };
