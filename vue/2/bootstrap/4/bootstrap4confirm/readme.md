@@ -53,7 +53,7 @@ async onClickDoIfConfirm() {
 ></b4-await-confirm>
 ````
 
-### Аргументы
+## Аргументы
 
 ````javascript
 	confirm(htmlContent, title, okLabel, cancelLabel));
@@ -109,7 +109,7 @@ async onClickDoIfConfirm() {
 }
 ````
 
-## Default attibutes
+## Default attributes
 
 ````html
 <b4-await-confirm
@@ -120,7 +120,7 @@ async onClickDoIfConfirm() {
 ></b4-await-confirm>
 ````
 
-### Arguments
+## Arguments
 
 ````javascript
 	confirm(htmlContent, title, okLabel, cancelLabel));
