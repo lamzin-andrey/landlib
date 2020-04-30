@@ -6,7 +6,7 @@
 
 Это то, что позволит работать с диалогом confirm bootstrap 4 как с обычным window.confirm;
 
-Задавайте начальные значения на кнопках с помощью [атрибутов](#атрибуты)
+Задавайте начальные значения на кнопках с помощью [атрибутов](#атрибуты-по-умолчанию)
 
 Кастомизируйте текст вопроса, заголовок окна и текст на кнопках "на лету" с помощью [аргументов](#аргументы)
 
@@ -73,7 +73,7 @@ async onClickDoIfConfirm() {
 
 This is what will allow you to work with the confirm bootstrap 4 dialog as with a normal window.confirm;
 
-Set initial values on buttons with [attributes](#attributes)
+Set initial values on buttons with [attributes](#default-attributes)
 
 Customize the question text, window title and text on the buttons on the fly using the [arguments](#arguments)
 
