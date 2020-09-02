@@ -11,5 +11,5 @@ let mix = require('laravel-mix');
  |
  */
 //TrollKiller
-mix.js('js/app.js', 'out.js');
+mix.js('js/app.js', 'a.js');
 

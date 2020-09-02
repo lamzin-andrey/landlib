@@ -1,13 +1,15 @@
 window.jQuery = window.$ = window.jquery = require('jquery');
 window.Vue = require('vue');
+require('./vendor/bootstrap4.2.1.min.js');
+import './vendor/bootstrap4.2.1.min.css'
 
 //For REST request server
 require('../../landlib/net/rest.js');
 
 
 //For live translit
-require('../../landlib/nodom/textformat.js').default;
-require('../../landlib/dom/livetranslit/livetranslit.js').default;
+//require('../../landlib/nodom/textformat.js').default;
+// require('../../landlib/dom/livetranslit/livetranslit.js').default;
 
 
 
@@ -23,21 +25,21 @@ const i18n = new VueI18n({
 
 //"Стандартная" валидация полей формы ?? Need ??
 //Включить директиву, определённую во внешнем файле (в файле b421validatorsdirective.js директива b421validators определяется глобально)
-require('../../bootstrap421-validators/b421validatorsdirective');
+require('../../vue2-bootstrap4.2.1-validator/b421validatorsdirective');
 
 //класс с методами валидации. При использовании более ранних (или более поздних) версий bootstrap 
 //(или если поля ввода вашей формы будет иметь иную верстку чем в документации бутстрап 4.2.1)
 //надо наследоваться от этого класса и перегружать view* - методы (методы, начинающиеся со слова view)
 //импортировать в этом случае конечно надо наследник, а не родитель
-import B421Validators  from '../../bootstrap421-validators/b421validators';
+import B421Validators  from '../../vue2-bootstrap4.2.1-validator/b421validators';
 //Обрати внимание на передачу B421Validators в app.data 
 // / "Стандартная" валидация полей формы
 
 
 //Компонент вместо стандартного confirm TODO тут просто проверим, чего и как
-Vue.component('b4confirmdlg', require('./views/b4confirmdialog/b4confirmdlg.vue'));
+Vue.component('b4confirmdlg', require('./views/b4confirmdialog/b4confirmdlg.vue').default);
 //Компонент вместо стандартного alert  TODO тут просто проверим, чего и как
-Vue.component('b4alertdlg', require('./views/b4alertdialog/b4alertdlg.vue'));
+Vue.component('b4alertdlg', require('./views/b4alertdialog/b4alertdlg.vue').default);
 
 window.app = new Vue({
     i18n : i18n,
@@ -81,7 +83,8 @@ window.app = new Vue({
    */
    mounted() {
 		this.localizeParams();
-		Rest._token = this._getToken();
+        Rest._token = this._getToken();
+        this.alert('mounted!');
    },
    computed:{
 		
@@ -93,10 +96,10 @@ window.app = new Vue({
 	
     
 	/**
-     * @description Click on button "Edit article" TODO Пример
+     * @description 
      * @param {Event} evt
     */
-   onClickEditArticle(evt) {
+   on(evt) {
 		if (this.requestedArticleId > 0) {
 			this.alert(this.$t('app.Other_article_requested_for_edit'));
 			return;
@@ -104,12 +107,17 @@ window.app = new Vue({
 		this.requestedArticleId = $(evt.target).attr('data-id');
 		$('#spin' + this.requestedArticleId).toggleClass('d-none');
 		this.$root._get((d) => {this.onSuccessGetArticle(d);}, `/p/article/jn/?id=${this.requestedArticleId}`, (a, b, c) => {this.onFailGetArticle(a, b, c);} );
-	},
+    },
+    onTClick() {
+        alert('Hello');
+        this.alert('Hello');
+        alert('Aft Hello');
+    },
 	/**
-     * @description Success request article data for edit
+     * @description Success example
 	 * @param {Object} data
 	*/
-	onSuccessGetArticle(data) {
+	onSuccess(data) {
 		if (!this.onFailGetArticle(data)) {
 			return;
 		}
@@ -210,17 +218,6 @@ window.app = new Vue({
 		}
 		return true;
 	},
-    /**
-     * @description Извлекает clientX из 0 элемента changedTouches события TouchStartEvent
-     * @param {TouchStartEvent} evt
-     * @return Number
-    */
-    getClientXFromTouchEvent(evt){
-        if (evt.changedTouches && evt.changedTouches[0] && evt.changedTouches[0].clientX) {
-            return evt.changedTouches[0].clientX;
-        }
-        return 0;
-    },
     /**
      * @description Индексирует массив по указанному полю
      * @param {Array} data
