@@ -3,6 +3,16 @@ window.Rest = {
 	 * @property {String} csrf token, set it from app
 	*/
 	_token : '',
+	
+	/**
+	 * @property {String} csrf token name, set it from app
+	*/
+	_token_name : '_token',
+	/**
+	 * @property {Number} For multiupload uploading input.files[_fileIndex]
+	*/
+	_fileIndex: 0,
+	
 	/**
 	 * @property {String} _lang
 	*/
@@ -18,7 +28,7 @@ window.Rest = {
     _post:function(data, onSuccess, url, onFail) {
         var t = this._getToken();
         if (t) {
-            data._token = t;
+            data[this._token_name] = t;
             this._restreq('post', data, onSuccess, url, onFail)
         }
 	},
@@ -78,7 +88,7 @@ window.Rest = {
 	 * @return String
      */
     _getToken:function() {
-        return this._token;
+        return this[this._token_name];
 	},
 	/**
      * @description ajax request (FormData).
@@ -94,7 +104,7 @@ window.Rest = {
         } else {
             url = this.root + url;
         }
-        if (!onFail) {
+        if (!onFail && window.defaultFail) {
             onFail = defaultFail;
         }
         /*switch (method) {
@@ -106,16 +116,64 @@ window.Rest = {
 		if (this._lang && !sendData.lang) {
 			sendData.lang = this._lang;
 		}
-        $.ajax({
+        /*$.ajax({
             method: method,
             data:sendData,
             url:url,
             dataType:'json',
             success:onSuccess,
             error:onFail
-        });
-        
+        });*/
+        this.pureAjax(url, data, onSuccess, onFail, method);
 	},
+	/**
+     * @desc Аякс запрос к серверу, использует JSON
+    */
+    pureAjax:function(url, data, onSuccess, onFail, method) {
+        var xhr = new XMLHttpRequest();
+        //подготовить данные для отправки
+        var arr = []
+        for (var i in data) {
+            arr.push(i + '=' + encodeURIComponent(data[i]));
+        }
+        var sData = arr.join('&');
+        //установить метод  и адрес
+        //console.log("'" + url + "'");
+        xhr.open(method, url);
+        //console.log('Open...');
+        //установить заголовок
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        // xhr.setRequestHeader('Content-Type', 'application/json');
+        //обработать ответ
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+                var error = {};
+                if (xhr.status == 200) {
+                    try {
+                        var response = JSON.parse(String(xhr.responseText));
+                        onSuccess(response, xhr);
+                        return;
+                    } catch(err) {
+                        console.log(err);
+                        error.state = 1;
+                        error.info = 'Fail parse JSON';
+                    }
+                }else {
+                    error.state = 1;
+                }
+                if (error.state) {
+                    onFail(xhr.status, xhr.responseText, error.info, xhr);
+                }
+            } else if (xhr.readyState > 3) {
+                onFail(xhr.status, xhr.responseText, 'No ok', xhr, xhr.readyState);
+            }
+        }
+        //отправить
+        //console.log('bef send');
+        xhr.send(sData, true);
+        //console.log('aft send');
+    },
 	/**
      * @description Отправка файла методом POST
      * @param {FileInput} iFile
@@ -138,14 +196,10 @@ window.Rest = {
 			this._postSendFileAndroid2(iFile, url, data, onSuccess, onFail, onProgress, tokenName, token, timeout);
 			return;
 		}
-		
-		
-		
-        
         
         tokenName = tokenName ? tokenName : '_token';
         
-        form.append(iFile.id, iFile.files[0]);
+        form.append(iFile.id, iFile.files[this._fileIndex]);
         form.append("path", url);
         for (i in data) {
             form.append(i, data[i]);
@@ -160,11 +214,11 @@ window.Rest = {
             form.append(tokenName, t);
         }
         xhr.upload.addEventListener("progress", function(pEvt){
-            var loadedPercents, loadedBytes, total;
+            var loadedPercents;
             if (pEvt && pEvt.lengthComputable) {
                 loadedPercents = Math.round((pEvt.loaded * 100) / pEvt.total);
             }
-            onProgress(loadedPercents, loadedBytes, total);
+            onProgress(loadedPercents, pEvt.loaded, pEvt.total);
         });
         xhr.upload.addEventListener("error", onFail);
         xhr.onreadystatechange = function () {
@@ -184,7 +238,7 @@ window.Rest = {
             }
         };
         xhr.open("POST", url);
-        xhr.send(form);
+        xhr.send(form, true);
     },
     
     /**
@@ -206,8 +260,7 @@ window.Rest = {
 			form = iFile.parentNode,
 			ls, name, existsFields = {},
 			iFrame,
-			iFrameHtml, ival, response
-			;
+			iFrameHtml, ival, response;
         
         while (form.tagName != 'FORM') {
 			form = form.parentNode;
@@ -234,12 +287,22 @@ window.Rest = {
         
         tokenName = tokenName ? tokenName : '_token';
         
-        ce(form, 'input', 'path', {value: url, type:'hidden', name: 'path'});
-        ce(form, 'input', 'isiframe', {value: 1, type:'hidden', name: 'isiframe'});
+        if (!e('path')) {
+			ce(form, 'input', 'path', {value: url, type:'hidden', name: 'path'});
+		} else {
+			e('path').value = url;
+		}
+		if (!e('isiframe')) {
+			ce(form, 'input', 'isiframe', {value: 1, type:'hidden', name: 'isiframe'});
+		} else {
+			e('isiframe').value = 1;
+		}
         for (i in data) {
-            // form.append(i, data[i]);
-            if (!existsFields[i]) {
+            // form.append(i, data[i]); 
+            if (!e(i)) {
 				ce(form, 'input', i, {value: data[i], type:'hidden', name: i});
+			} else {
+				e(i).value = data[i];
 			}
         }
         t = this._getToken();
@@ -249,7 +312,11 @@ window.Rest = {
         }
         
         if (t) {
-            ce(form, 'input', tokenName, {value: t, type:'hidden', name: tokenName});
+			if (!e(tokenName)) {
+				ce(form, 'input', tokenName, {value: t, type:'hidden', name: tokenName});
+			} else {
+				e(tokenName).value = t;
+			}
         }
         
         
@@ -257,18 +324,21 @@ window.Rest = {
         // xhr.send(form);
         iFrame = e(iFrameName);
         
-        if (iFrame) {
+        /*if (iFrame) {
 			rm(iFrame);
+			iFrame = null;
+		}*/
+		if (!iFrame) {
+			iFrame = ce(bod(), 'iframe', iFrameName, {
+				name: iFrameName,
+				src: '/0.html?r=' + Math.random(),
+				style: 'display:none'
+			}); 
 		}
 		
 		window.up = 0;
         
-        if (!iFrame) {
-			iFrame = ce(bod(), 'iframe', iFrameName, {
-				name: iFrameName,
-				src: '/0.htm',
-				style: 'display:none'
-			});
+        if (iFrame) {
 			iFrame.onload = function() {
 				if (window.up == 0) {
 					window.up++;
@@ -288,15 +358,15 @@ window.Rest = {
 								
 							} catch(e) {
 								clearInterval(ival);
-								alert(e);
-								alert(r);
+								showError(e);
+								showError(r);
 								onFail(e);
 							}
 						}
 						
 						if (i > timeout) {
 							clearInterval(ival);
-							onFail({status: 'error', errors: {p:'Превышен интервал ожидания запроса'}});
+							onFail({status: 'error', errors: {p: l('Превышен интервал ожидания запроса')}});
 						}
 						
 						i++;
@@ -304,10 +374,10 @@ window.Rest = {
 					
 				}
 			}
-			
-			iFrame.onerror = function(e) {
+			attr(iFrame, 'src', '/0.html?r=' + Math.random());
+			iFrame.onerror = function(err) {
 				clearInterval(ival);
-				onFail(e);
+				onFail(err);
 			}
 		}
 		

@@ -3,7 +3,10 @@
  * Её удобно использовать, когда пишешь код со (и для) старого смартфона.
 */
 var D = document,
-W = window, S = String;
+d = D,
+W = window, S = String,
+w = W,
+nav = W.navigator;
 function e(i) {
 	if (i && i.tagName || D == i) return i;
 	return D.getElementById(i);
@@ -15,9 +18,12 @@ function ee(p, c) {
 }
 W.micron$$ = ee;
 function cs(p, c) {
+	var a;
 	p = e(p);
 	if (p.getElementsByClassName) {
-		return p.getElementsByClassName(c);
+		a = p.getElementsByClassName(c);
+		sz(a);
+		return a;
 	}
 	return [];
 }
@@ -64,23 +70,33 @@ function getViewport() {
 	return {w:w, h:h};
 }
 function appendChild(parent, tag, innerHTML, obj, dataObj) {
-	var e = D.createElement(tag), i;
+	var el = D.createElement(tag), i;
 	if (obj) {
 		for (i in obj) {
 			if (obj[i] instanceof Function) {
-				e[i] =  obj[i];
+				el[i] =  obj[i];
 			} else {
-				e.setAttribute(i, obj[i]);
+				el.setAttribute(i, obj[i]);
 			}
 		}
 	}
 	if (dataObj) {
 		for (i in dataObj) {
-			e.setAttribute('data-' + i, dataObj[i]);
+			el.setAttribute('data-' + i, dataObj[i]);
 		}
 	}
-	e.innerHTML = innerHTML;
-	e(parent).appendChild(e);
+	el.innerHTML = innerHTML;
+	e(parent).appendChild(el);
+	
+	return el;
+}
+function ce(parent, tag, id, obj, dataObj) {
+	obj.id = id;
+	return appendChild(parent, tag, '', obj, dataObj);
+}
+function rm(DOMNode) {
+	var o = DOMNode;
+	o.parentNode.removeChild(o);
 }
 function attr(o, name, val) {
 	o = e(o);
@@ -91,6 +107,9 @@ function attr(o, name, val) {
 		return o.getAttribute(name);
 	}
 	return null;
+}
+function bod() {
+	return D.getElementsByTagName('body')[0];
 }
 function stl(o, s, v) {
 	o = e(o);
@@ -310,12 +329,23 @@ function decsz(o) {
   return sz(o) - 1;
 }
 /**
- * @description Безопасно озвращает размер массива
+ * @description Безопасно возвращает размер массива
  * @param {Array} o
  * @return Number array length - 1
 */
 function sz(o) {
-  return o && o.length ? o.length : 0;
+  if (o && String(o.length) === 'undefined') {
+    if (o instanceof Object) {
+		var l = 0, i;
+		for (var i in o) {
+			l++;
+		}
+		window.SZ = l;
+		return l;
+	}
+  }
+  window.SZ = o && o.length ? o.length : 0;
+  return window.SZ;
 }
 /**
  * @description Меняет два элемента в массиве (или объекте) местами
@@ -328,3 +358,21 @@ function ex(data, i, j) {
   data[i] = data[j];
   data[j] = b;
 }
+/**
+ * @return Array
+*/
+function array_values(o) {
+	if (o instanceof Array) {
+		return o;
+	}
+	if (o instanceof Object) {
+		var r = [], i;
+		for (i in o) {
+			r.push(o[i]);
+		}
+		return r;
+	}
+	
+	return [];
+}
+
