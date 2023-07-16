@@ -39,6 +39,9 @@ function hasClass(obj, css) {
 }
 function removeClass(obj, css) {
 	obj = e(obj);
+	if (!obj) {
+		return;
+	}
 	var c = obj.className, re = /[0-9a-zA-Z\-_]+/gm,
 	arr = c.match(re),
 	i, result = [];
@@ -51,6 +54,9 @@ function removeClass(obj, css) {
 }
 function addClass(obj, css) {
 	obj = e(obj);
+	if (!obj) {
+		return;
+	}
 	removeClass(obj, css);
 	obj.className += ' ' + css;
 }
@@ -113,7 +119,11 @@ function bod() {
 }
 function stl(o, s, v) {
 	o = e(o);
-	o.style[s] = v;
+	if (v) {
+		o.style[s] = v;
+	}
+	v = o.style[s];
+	return v;
 }
 function show(o, v) {
 	v = v ? v : 'block';
@@ -315,7 +325,7 @@ function wsStorage(table, id, onData, data) {
  * @return * defaultValue if value is undefined
 */
 function def(v, defV) {
-    if ( String( v )  == 'undefined'  ){
+    if (S(v)  == 'undefined'){
       return defV;
     }
     return v;
