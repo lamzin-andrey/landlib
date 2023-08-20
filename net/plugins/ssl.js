@@ -16,6 +16,7 @@ P.watch = function() {
 	if (!HttpQueryString.isSSL()) {
 		saved = parseInt(storage('ssl'));
 		if (saved == SSLAgent.SSL_DISALLOW) {
+			this.fixLink();
 			return;
 		}
 		if (saved == SSLAgent.SSL_ALLOW) {
@@ -23,11 +24,6 @@ P.watch = function() {
 			return;
 		}
 		
-		/*Rest._get(function(data){
-			o.onSuccessGetSSlData(data);
-		}, url, function(data, responseText, info, xhr){
-			o.onFailGetSSlData(data, responseText, info, xhr);
-		});*/
 		img = appendChild(bod(), 'img', '', {
 			'src': url,
 			'class': 'imprld',
@@ -41,14 +37,27 @@ P.watch = function() {
 	}
 }
 P.onSuccessGetSSlData = function(evt) {
-	console.log(evt);
 	storage('ssl', SSLAgent.SSL_ALLOW);
 	location.href = 'https://' + $_SERVER['HTTP_HOST'] + $_SERVER['REQUEST_URI'];
 }
 
 P.onFailGetSSlData = function(error) {
-	console.log(error);
 	storage('ssl', SSLAgent.SSL_DISALLOW);
+	this.fixLink();
+}
+
+P.fixLink = function() {
+	var ls = ee(D, 'a'), i, SZ = sz(ls), link, s = 'https', o = this;
+	for (i = 0; i < SZ; i++) {
+		link = attr(ls[i], 'href');
+		if (link && link.indexOf(s) === 0) {
+			link = link.replace(s, 'http');
+			attr(ls[i], 'href', link);
+		}
+	}
+	setTimeout(function(){
+		o.fixLink();
+	}, 1000);
 }
 
 window.addEventListener('load', function(){
