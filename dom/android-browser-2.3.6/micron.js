@@ -101,8 +101,8 @@ function ce(parent, tag, id, obj, dataObj) {
 	return appendChild(parent, tag, '', obj, dataObj);
 }
 function rm(DOMNode) {
-	var o = DOMNode;
-	o.parentNode.removeChild(o);
+	var o = e(DOMNode);
+	o ? o.parentNode.removeChild(o) : 0;
 }
 function attr(o, name, val) {
 	o = e(o);
@@ -395,7 +395,7 @@ function v(o, s) {
 	// if (o.tagName == 'INPUT' || o.tagName == 'TEXTAREA' || o.tagName == 'SELECT') {
 	if (o.tagName in In(['INPUT', 'TEXTAREA', 'SELECT'])) {
 		if (o.type != 'checkbox') {
-			if (S(v) !== 'undefined') {
+			if (S(s) !== 'undefined') {
 				o.value = s;
 			} else {
 				r = o.value;
@@ -420,4 +420,28 @@ function v(o, s) {
 	}
 	
 	return r;
+}
+
+function loc() {
+	return location;
+}
+
+function gto(s) {
+	loc().href = s;
+}
+
+function reload() {
+	loc().reload();
+}
+
+function isU(x) {
+	return String(x) === "undefined";
+}
+
+function isNull(x) {
+	return String(x) === "null";
+}
+
+function ctrg(ev) {
+	return ev.currentTarget;
 }
