@@ -77,6 +77,10 @@ class DlgMgr {
 		o.activate(n);
 	}
 	
+	center(n) {
+		this.ls[n].center();
+	}
+	
 	minimize(n) {
 		this.hide(n);
 	}
