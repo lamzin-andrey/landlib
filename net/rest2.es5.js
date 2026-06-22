@@ -1,6 +1,6 @@
 window.Rest2 = {
 	/**
-	 * @description Set _token and _tiken_name in Rest
+	 * @description Set _token and _token_name in Rest
 	*/
 	_setToken:function(sT, sN){
 		Rest._token = sT;
@@ -35,7 +35,7 @@ window.Rest2 = {
      * @param {Function} onFail 
      * @param {Object} context 
      */
-    _post(data, onSuccess, url, onFail, ctx) {
+    _post:function(data, onSuccess, url, onFail, ctx) {
         var t = Rest._getToken();
         if (t) {
             data[Rest._token_name] = t;
@@ -198,7 +198,7 @@ window.Rest2 = {
             if (pEvt && pEvt.lengthComputable) {
                 loadedPercents = Math.round((pEvt.loaded * 100) / pEvt.total);
             }
-            ctx.call(onProgress, loadedPercents, pEvt.loaded, pEvt.total);
+            onProgress.call(ctx, loadedPercents, pEvt.loaded, pEvt.total);
         });
         xhr.upload.addEventListener("error", onFail);
         xhr.onreadystatechange = function () {
@@ -211,9 +211,9 @@ window.Rest2 = {
                     } catch(e)  {
                         //;
                     }
-                    ctx.call(onSuccess, s);
+                    onSuccess.call(ctx, s);
                 } else {
-                    ctx.call(onFail, t.status, arguments);
+                    onFail.call(ctx, t.status, arguments);
                 }
             }
         };

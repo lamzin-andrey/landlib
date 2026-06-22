@@ -20,7 +20,7 @@ W.micron$$ = ee;
 function cs(p, c) {
 	var a;
 	p = e(p);
-	if (p.getElementsByClassName) {
+	if (p && p.getElementsByClassName) {
 		a = p.getElementsByClassName(c);
 		sz(a);
 		return a;
@@ -100,8 +100,14 @@ function ce(parent, tag, id, obj, dataObj) {
 	obj.id = id;
 	return appendChild(parent, tag, '', obj, dataObj);
 }
-function rm(DOMNode) {
+function rm(DOMNode, a) {
 	var o = e(DOMNode);
+	if (o && a) {
+		if (o.hasAttribute(a)) {
+			o.removeAttribute(a);
+		}
+		return;
+	}
 	o ? o.parentNode.removeChild(o) : 0;
 }
 function attr(o, name, val) {
@@ -130,7 +136,8 @@ function show(o, v) {
 	stl(o, 'display', v);
 }
 function hide(o) {
-	stl(o, 'display', 'none');
+	o = e(o);
+	o ? stl(o, 'display', 'none') : 0;
 }
 /**
  * @description Каюсь, я был уверен что в IE 6 её нет у клласса String
@@ -422,7 +429,10 @@ function v(o, s) {
 	return r;
 }
 
-function loc() {
+function loc(n) {
+	if (n) {
+		gto(s);
+	}
 	return location;
 }
 
@@ -430,7 +440,10 @@ function foc(i){
 	e(i) ? e(i).focus() : 0;
 }
 
-function gto(s) {
+function gto(s, b) {
+	if (b) {
+		return W.open(s, '_blank');
+	}
 	loc().href = s;
 }
 
@@ -448,4 +461,38 @@ function isNull(x) {
 
 function ctrg(ev) {
 	return ev.currentTarget;
+}
+
+function insertBefore(existsEl, newEl) {
+	var p = existsEl.parentNode;
+	return p.insertBefore(newEl, existsEl);
+}
+
+function nv() {
+	return navigator;
+}
+
+function isSmart() {
+	var s = nv().userAgent.toLowerCase();
+	return !!(~s.indexOf("iphone") || ~s.indexOf("android"));
+}
+function di(o) {
+	var k = 'disabled';
+	o = e(o);
+	o ? attr(o, k, k) : 0;
+}
+function ei(o) {
+	rm(o, 'disabled');
+}
+function selectByVal(sl, n) {
+	sl = e(sl);
+	for (var i = 0; i < sz(sl.options); i++) {
+		if (sl.options[i].value == n ) {
+			sl.options.selectedIndex = i;
+			if (sl.onchange) {
+				sl.onchange();
+			}
+			break;
+		}
+	}
 }
